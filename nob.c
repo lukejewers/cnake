@@ -13,12 +13,9 @@ int main(int argc, char **argv) {
                    "-o", BUILD_FOLDER"main", "main.c",
                    "-L./thirdparty/raylib/src/", "-lraylib",
                    // macOS specific frameworks
-                   "-framework", "CoreVideo",
                    "-framework", "IOKit",
                    "-framework", "Cocoa",
-                   "-framework", "GLUT",
-                   "-framework", "OpenGL",
-                   "-framework", "CoreFoundation");
+                  );
     if (!nob_cmd_run_sync(cmd)) return 1;
     return 0;
 }
