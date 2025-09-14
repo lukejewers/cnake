@@ -13,6 +13,12 @@
 #define BG_EARTHY CLITERAL(Color){ 45, 35, 25, 255 }
 #define GRID_EARTHY_LIGHT CLITERAL(Color){ 60, 45, 35, 255 }
 
+typedef enum {
+    PLAY,
+    PAUSE,
+    GAME_OVER
+} GameState;
+
 typedef struct {
     int x;
     int y;
@@ -31,8 +37,9 @@ typedef struct {
 Snake snake = {0};
 Apple apple = {0};
 float move_timer = 0;
-int direction = KEY_RIGHT;
-int next_direction = KEY_RIGHT;
+GameState game_state = PLAY;
+KeyboardKey direction = KEY_RIGHT;
+KeyboardKey next_direction = KEY_RIGHT;
 
 void InitSnake() {
     snake.length = 2;
@@ -84,6 +91,7 @@ void UpdateSnake() {
             case KEY_DOWN:  snake.segments[0].y += CELL_SIZE; break;
             case KEY_RIGHT: snake.segments[0].x += CELL_SIZE; break;
             case KEY_LEFT:  snake.segments[0].x -= CELL_SIZE; break;
+            default: break;
         }
 
         if (snake.segments[0].x >= WIN_WIDTH) snake.segments[0].x = 0;
@@ -121,10 +129,19 @@ void DrawApple() {
 
 void DrawScore() {
     char score[100];
-    sprintf(score, "score: %d", apple.eaten);
+    sprintf(score, "SCORE: %d", apple.eaten);
     int textWidth = MeasureText(score, FONT_SIZE);
     DrawText(score, WIN_WIDTH - textWidth - CELL_SIZE, CELL_SIZE - FONT_SIZE, FONT_SIZE, WHITE);
 }
+
+void DrawState() {
+    char *game_state_text;
+    if (game_state == PAUSE) game_state_text = "PAUSE";
+    else if (game_state == PAUSE) game_state_text = "GAME OVER";
+    int textWidth = MeasureText(game_state_text, FONT_SIZE);
+    DrawText(game_state_text, (WIN_WIDTH/2) - (textWidth/2), (WIN_HEIGHT/2) - (FONT_SIZE/2), FONT_SIZE, WHITE);
+}
+
 
 int main(void) {
     InitWindow(WIN_WIDTH, WIN_HEIGHT, "cnake");
@@ -135,9 +152,22 @@ int main(void) {
     InitSnake();
 
     while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_SPACE) && game_state == PLAY) {
+            game_state = PAUSE;
+        } else if (game_state == PAUSE     &&
+                  (IsKeyPressed(KEY_SPACE) ||
+                   IsKeyPressed(KEY_UP)    ||
+                   IsKeyPressed(KEY_DOWN)  ||
+                   IsKeyPressed(KEY_LEFT)  ||
+                   IsKeyPressed(KEY_RIGHT))) {
+            game_state = PLAY;
+        }
+
         // UPDATE
-        UpdateApple();
-        UpdateSnake();
+        if (game_state == PLAY) {
+            UpdateApple();
+            UpdateSnake();
+        }
 
         // DRAW
         BeginDrawing();
@@ -145,6 +175,7 @@ int main(void) {
         DrawApple();
         DrawSnake();
         DrawScore();
+        if (game_state == PAUSE || game_state == GAME_OVER) DrawState();
         EndDrawing();
     }
     return 0;
