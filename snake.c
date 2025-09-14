@@ -8,6 +8,7 @@
 #define CELL_SIZE 50
 #define MAX_SNAKE_LENGTH 100
 #define MOVE_INTERVAL 0.1f
+#define FONT_SIZE 20
 
 #define BG_EARTHY CLITERAL(Color){ 45, 35, 25, 255 }
 #define GRID_EARTHY_LIGHT CLITERAL(Color){ 60, 45, 35, 255 }
@@ -26,7 +27,6 @@ typedef struct {
     Position position;
     int eaten;
 } Apple;
-
 
 Snake snake = {0};
 Apple apple = {0};
@@ -52,7 +52,6 @@ void InitApple() {
     apple.position.x = 500;
     apple.position.y = 250;
 }
-
 
 void UpdateApple() {
     if (apple.position.x == snake.segments[0].x &&
@@ -120,6 +119,13 @@ void DrawApple() {
     DrawRectangle(apple.position.x, apple.position.y, CELL_SIZE, CELL_SIZE, RED);
 }
 
+void DrawScore() {
+    char score[100];
+    sprintf(score, "score: %d", apple.eaten);
+    int textWidth = MeasureText(score, FONT_SIZE);
+    DrawText(score, WIN_WIDTH - textWidth - CELL_SIZE, CELL_SIZE - FONT_SIZE, FONT_SIZE, WHITE);
+}
+
 int main(void) {
     InitWindow(WIN_WIDTH, WIN_HEIGHT, "cnake");
     SetTargetFPS(60);
@@ -138,6 +144,7 @@ int main(void) {
         DrawBackground();
         DrawApple();
         DrawSnake();
+        DrawScore();
         EndDrawing();
     }
     return 0;
