@@ -16,6 +16,8 @@ int main(int argc, char **argv) {
                    "-framework", "IOKit",
                    "-framework", "Cocoa",
                   );
-    if (!nob_cmd_run_sync(cmd)) return 1;
+    if (!nob_cmd_run(&cmd)) return 1;
+    nob_cmd_append(&cmd, "./build/main");
+    if (!nob_cmd_run(&cmd)) return 1;
     return 0;
 }
