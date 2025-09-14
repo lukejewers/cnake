@@ -9,7 +9,10 @@
 #define MAX_SNAKE_LENGTH 100
 #define MOVE_INTERVAL 0.1f
 #define FONT_SIZE 20
-
+#define SNAKE_HEAD_COLOR DARKGREEN
+#define SNAKE_BODY_COLOR GREEN
+#define APPLE_COLOR RED
+#define TEXT_COLOR WHITE
 #define BG_EARTHY CLITERAL(Color){ 45, 35, 25, 255 }
 #define GRID_EARTHY_LIGHT CLITERAL(Color){ 60, 45, 35, 255 }
 
@@ -126,29 +129,29 @@ void DrawBackground() {
 
 void DrawSnake() {
     for (int i = 0; i < snake.length; ++i) {
-        DrawRectangle(snake.segments[i].x, snake.segments[i].y, CELL_SIZE, CELL_SIZE, i == 0 ? DARKGREEN : GREEN);
+        DrawRectangle(snake.segments[i].x, snake.segments[i].y, CELL_SIZE, CELL_SIZE, i == 0 ? SNAKE_HEAD_COLOR : SNAKE_BODY_COLOR);
     }
 }
 
 void DrawApple() {
-    DrawRectangle(apple.position.x, apple.position.y, CELL_SIZE, CELL_SIZE, RED);
+    DrawRectangle(apple.position.x, apple.position.y, CELL_SIZE, CELL_SIZE, APPLE_COLOR);
 }
 
 void DrawScore() {
     char score[100];
     sprintf(score, "SCORE: %d", apple.eaten);
     int textWidth = MeasureText(score, FONT_SIZE);
-    DrawText(score, WIN_WIDTH - textWidth - CELL_SIZE, CELL_SIZE - FONT_SIZE, FONT_SIZE, WHITE);
+    DrawText(score, WIN_WIDTH - textWidth - CELL_SIZE, CELL_SIZE - FONT_SIZE, FONT_SIZE, TEXT_COLOR);
 }
 
 void DrawState() {
     const char *game_state_text = (game_state == PAUSE) ? "PAUSE" : "GAME OVER";
     int stateTextWidth = MeasureText(game_state_text, FONT_SIZE);
-    DrawText(game_state_text, (WIN_WIDTH/2) - (stateTextWidth/2), (WIN_HEIGHT/2) - (FONT_SIZE/2), FONT_SIZE, WHITE);
+    DrawText(game_state_text, (WIN_WIDTH/2) - (stateTextWidth/2), (WIN_HEIGHT/2) - (FONT_SIZE/2), FONT_SIZE, TEXT_COLOR);
 
     const char *game_replay_text = (game_state == PAUSE) ? "Press SPACE or ARROWS to play" : "Press SPACE to replay";
     int replayTextWidth = MeasureText(game_replay_text, FONT_SIZE);
-    DrawText(game_replay_text, (WIN_WIDTH/2) - (replayTextWidth/2), (WIN_HEIGHT/2) + (FONT_SIZE/2) * 2, FONT_SIZE, WHITE);
+    DrawText(game_replay_text, (WIN_WIDTH/2) - (replayTextWidth/2), (WIN_HEIGHT/2) + (FONT_SIZE/2) * 2, FONT_SIZE, TEXT_COLOR);
 }
 
 void ResetGame() {
