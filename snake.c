@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "raylib.h"
 
 #define WIN_WIDTH 800
@@ -12,14 +15,21 @@
 typedef struct {
     int x;
     int y;
-} Segment;
+} Position;
 
 typedef struct {
-    Segment segments[MAX_SNAKE_LENGTH];
+    Position segments[MAX_SNAKE_LENGTH];
     int length;
 } Snake;
 
+typedef struct {
+    Position position;
+    int eaten;
+} Apple;
+
+
 Snake snake = {0};
+Apple apple = {0};
 float move_timer = 0;
 int direction = KEY_RIGHT;
 int next_direction = KEY_RIGHT;
@@ -27,12 +37,33 @@ int next_direction = KEY_RIGHT;
 void InitSnake() {
     snake.length = 2;
     // initialise the head
-    snake.segments[0].x = 0;
+    snake.segments[0].x = 300;
     snake.segments[0].y = 250;
     // initialise the tail
     for (int i = 1; i < snake.length; ++i) {
         snake.segments[i].x = snake.segments[0].x - (i * CELL_SIZE);
         snake.segments[i].y = snake.segments[0].y;
+    }
+}
+
+void InitApple() {
+    apple.eaten = 0;
+    // initialise the position
+    apple.position.x = 500;
+    apple.position.y = 250;
+}
+
+
+void UpdateApple() {
+    if (apple.position.x == snake.segments[0].x &&
+        apple.position.y == snake.segments[0].y) {
+        apple.position.x = ((int)rand() % WIN_WIDTH/CELL_SIZE) * CELL_SIZE;
+        apple.position.y = ((int)rand() % WIN_HEIGHT/CELL_SIZE) * CELL_SIZE;
+        if (snake.length < MAX_SNAKE_LENGTH) {
+            snake.segments[snake.length] = snake.segments[snake.length - 1];
+            snake.length++;
+        }
+        apple.eaten++;
     }
 }
 
@@ -46,7 +77,7 @@ void UpdateSnake() {
 
     if (move_timer >= MOVE_INTERVAL) {
         move_timer = 0;
-        Segment old_head = snake.segments[0];
+        Position old_head = snake.segments[0];
         direction = next_direction;
 
         switch (direction) {
@@ -64,7 +95,6 @@ void UpdateSnake() {
         for (int i = snake.length - 1; i > 0; i--) {
             snake.segments[i] = snake.segments[i - 1];
         }
-
         if (snake.length > 1) snake.segments[1] = old_head;
     }
 }
@@ -86,19 +116,27 @@ void DrawSnake() {
     }
 }
 
+void DrawApple() {
+    DrawRectangle(apple.position.x, apple.position.y, CELL_SIZE, CELL_SIZE, RED);
+}
+
 int main(void) {
     InitWindow(WIN_WIDTH, WIN_HEIGHT, "cnake");
     SetTargetFPS(60);
+    srand(time(NULL));
 
+    InitApple();
     InitSnake();
 
     while (!WindowShouldClose()) {
         // UPDATE
+        UpdateApple();
         UpdateSnake();
 
         // DRAW
         BeginDrawing();
         DrawBackground();
+        DrawApple();
         DrawSnake();
         EndDrawing();
     }
