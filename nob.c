@@ -10,14 +10,14 @@ int main(int argc, char **argv) {
     nob_cmd_append(&cmd, "gcc",
                    "-Wall", "-Wextra", "-ggdb",
                    "-I.", "-I./thirdparty/raylib/src/",
-                   "-o", BUILD_FOLDER"main", "main.c",
+                   "-o", BUILD_FOLDER"snake", "snake.c",
                    "-L./thirdparty/raylib/src/", "-lraylib",
                    // macOS specific frameworks
                    "-framework", "IOKit",
                    "-framework", "Cocoa",
                   );
     if (!nob_cmd_run(&cmd)) return 1;
-    nob_cmd_append(&cmd, "./build/main");
+    nob_cmd_append(&cmd, "./build/snake");
     if (!nob_cmd_run(&cmd)) return 1;
     return 0;
 }
