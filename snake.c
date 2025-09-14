@@ -94,6 +94,13 @@ void UpdateSnake() {
             default: break;
         }
 
+        for (int i = 1; i < snake.length; ++i) {
+            if (snake.segments[0].x == snake.segments[i].x &&
+                snake.segments[0].y == snake.segments[i].y) {
+                game_state = GAME_OVER;
+            }
+        }
+
         if (snake.segments[0].x >= WIN_WIDTH) snake.segments[0].x = 0;
         if (snake.segments[0].x < 0) snake.segments[0].x = WIN_WIDTH - CELL_SIZE;
         if (snake.segments[0].y >= WIN_HEIGHT) snake.segments[0].y = 0;
@@ -135,13 +142,22 @@ void DrawScore() {
 }
 
 void DrawState() {
-    char *game_state_text;
-    if (game_state == PAUSE) game_state_text = "PAUSE";
-    else if (game_state == PAUSE) game_state_text = "GAME OVER";
-    int textWidth = MeasureText(game_state_text, FONT_SIZE);
-    DrawText(game_state_text, (WIN_WIDTH/2) - (textWidth/2), (WIN_HEIGHT/2) - (FONT_SIZE/2), FONT_SIZE, WHITE);
+    const char *game_state_text = (game_state == PAUSE) ? "PAUSE" : "GAME OVER";
+    int stateTextWidth = MeasureText(game_state_text, FONT_SIZE);
+    DrawText(game_state_text, (WIN_WIDTH/2) - (stateTextWidth/2), (WIN_HEIGHT/2) - (FONT_SIZE/2), FONT_SIZE, WHITE);
+
+    const char *game_replay_text = (game_state == PAUSE) ? "Press SPACE or ARROWS to play" : "Press SPACE to replay";
+    int replayTextWidth = MeasureText(game_replay_text, FONT_SIZE);
+    DrawText(game_replay_text, (WIN_WIDTH/2) - (replayTextWidth/2), (WIN_HEIGHT/2) + (FONT_SIZE/2) * 2, FONT_SIZE, WHITE);
 }
 
+void ResetGame() {
+    game_state = PLAY;
+    direction = KEY_RIGHT;
+    next_direction = KEY_RIGHT;
+    InitApple();
+    InitSnake();
+}
 
 int main(void) {
     InitWindow(WIN_WIDTH, WIN_HEIGHT, "cnake");
@@ -152,7 +168,7 @@ int main(void) {
     InitSnake();
 
     while (!WindowShouldClose()) {
-        if (IsKeyPressed(KEY_SPACE) && game_state == PLAY) {
+        if (game_state == PLAY && IsKeyPressed(KEY_SPACE)) {
             game_state = PAUSE;
         } else if (game_state == PAUSE     &&
                   (IsKeyPressed(KEY_SPACE) ||
@@ -161,6 +177,9 @@ int main(void) {
                    IsKeyPressed(KEY_LEFT)  ||
                    IsKeyPressed(KEY_RIGHT))) {
             game_state = PLAY;
+        } else if (game_state == GAME_OVER &&
+                   IsKeyPressed(KEY_SPACE)) {
+            ResetGame();
         }
 
         // UPDATE
