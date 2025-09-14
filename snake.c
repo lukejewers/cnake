@@ -46,10 +46,8 @@ KeyboardKey next_direction = KEY_RIGHT;
 
 void InitSnake() {
     snake.length = 2;
-    // initialise the head
     snake.segments[0].x = 300;
     snake.segments[0].y = 250;
-    // initialise the tail
     for (int i = 1; i < snake.length; ++i) {
         snake.segments[i].x = snake.segments[0].x - (i * CELL_SIZE);
         snake.segments[i].y = snake.segments[0].y;
@@ -58,7 +56,6 @@ void InitSnake() {
 
 void InitApple() {
     apple.eaten = 0;
-    // initialise the position
     apple.position.x = 500;
     apple.position.y = 250;
 }
@@ -66,8 +63,24 @@ void InitApple() {
 void UpdateApple() {
     if (apple.position.x == snake.segments[0].x &&
         apple.position.y == snake.segments[0].y) {
-        apple.position.x = ((int)rand() % WIN_WIDTH/CELL_SIZE) * CELL_SIZE;
-        apple.position.y = ((int)rand() % WIN_HEIGHT/CELL_SIZE) * CELL_SIZE;
+
+        Position new_pos;
+        bool on_snake;
+        do {
+            on_snake = false;
+            new_pos.x = (rand() % (WIN_WIDTH / CELL_SIZE)) * CELL_SIZE;
+            new_pos.y = (rand() % (WIN_HEIGHT / CELL_SIZE)) * CELL_SIZE;
+
+            for (int i = 0; i < snake.length; ++i) {
+                if (new_pos.x == snake.segments[i].x && new_pos.y == snake.segments[i].y) {
+                    on_snake = true;
+                    break;
+                }
+            }
+        } while (on_snake);
+
+        apple.position = new_pos;
+
         if (snake.length < MAX_SNAKE_LENGTH) {
             snake.segments[snake.length] = snake.segments[snake.length - 1];
             snake.length++;
@@ -101,6 +114,7 @@ void UpdateSnake() {
             if (snake.segments[0].x == snake.segments[i].x &&
                 snake.segments[0].y == snake.segments[i].y) {
                 game_state = GAME_OVER;
+                break;
             }
         }
 
@@ -138,10 +152,10 @@ void DrawApple() {
 }
 
 void DrawScore() {
-    char score[100];
-    sprintf(score, "SCORE: %d", apple.eaten);
+    char score[50];
+    snprintf(score, sizeof(score), "SCORE: %d", apple.eaten);
     int textWidth = MeasureText(score, FONT_SIZE);
-    DrawText(score, WIN_WIDTH - textWidth - CELL_SIZE, CELL_SIZE - FONT_SIZE, FONT_SIZE, TEXT_COLOR);
+    DrawText(score, WIN_WIDTH - textWidth - CELL_SIZE, CELL_SIZE, FONT_SIZE, TEXT_COLOR);
 }
 
 void DrawState() {
@@ -200,5 +214,6 @@ int main(void) {
         if (game_state == PAUSE || game_state == GAME_OVER) DrawState();
         EndDrawing();
     }
+    CloseWindow();
     return 0;
 }
