@@ -4,8 +4,8 @@ CFLAGS = -Wall -I./thirdparty/raylib/src/
 LDFLAGS = -L./thirdparty/raylib/src/ -lraylib -framework IOKit -framework Cocoa -framework OpenGL
 
 # Target
-TARGET = snake
-SRC = snake.c
+TARGET = cnake
+SRC = cnake.c
 
 all: $(TARGET)
 

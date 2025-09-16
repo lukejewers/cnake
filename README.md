@@ -6,5 +6,5 @@
 ## How to compile (macOS only)
 
 ```console
-$ make && ./snake
+$ make && ./cnake
 ```
