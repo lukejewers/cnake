@@ -61,6 +61,7 @@ void InitApple() {
 }
 
 void UpdateApple() {
+    if (game_state != PLAY) return;
     if (apple.position.x == snake.segments[0].x &&
         apple.position.y == snake.segments[0].y) {
 
@@ -90,6 +91,7 @@ void UpdateApple() {
 }
 
 void UpdateSnake() {
+    if (game_state != PLAY) return;
     move_timer += GetFrameTime();
 
     if (IsKeyPressed(KEY_UP) && direction != KEY_DOWN) next_direction = KEY_UP;
@@ -159,6 +161,7 @@ void DrawScore() {
 }
 
 void DrawState() {
+    if (game_state == PLAY) return;
     const char *game_state_text = (game_state == PAUSE) ? "PAUSE" : "GAME OVER";
     int stateTextWidth = MeasureText(game_state_text, FONT_SIZE);
     DrawText(game_state_text, (WIN_WIDTH/2) - (stateTextWidth/2), (WIN_HEIGHT/2) - (FONT_SIZE/2), FONT_SIZE, TEXT_COLOR);
@@ -176,6 +179,22 @@ void ResetGame() {
     InitSnake();
 }
 
+void UpdateGameState() {
+    if (game_state == PLAY && IsKeyPressed(KEY_SPACE)) {
+        game_state = PAUSE;
+    } else if (game_state == PAUSE     &&
+               (IsKeyPressed(KEY_SPACE) ||
+                IsKeyPressed(KEY_UP)    ||
+                IsKeyPressed(KEY_DOWN)  ||
+                IsKeyPressed(KEY_LEFT)  ||
+                IsKeyPressed(KEY_RIGHT))) {
+        game_state = PLAY;
+    } else if (game_state == GAME_OVER &&
+               IsKeyPressed(KEY_SPACE)) {
+        ResetGame();
+    }
+}
+
 int main(void) {
     InitWindow(WIN_WIDTH, WIN_HEIGHT, "cnake");
     SetTargetFPS(60);
@@ -185,33 +204,17 @@ int main(void) {
     InitSnake();
 
     while (!WindowShouldClose()) {
-        if (game_state == PLAY && IsKeyPressed(KEY_SPACE)) {
-            game_state = PAUSE;
-        } else if (game_state == PAUSE     &&
-                  (IsKeyPressed(KEY_SPACE) ||
-                   IsKeyPressed(KEY_UP)    ||
-                   IsKeyPressed(KEY_DOWN)  ||
-                   IsKeyPressed(KEY_LEFT)  ||
-                   IsKeyPressed(KEY_RIGHT))) {
-            game_state = PLAY;
-        } else if (game_state == GAME_OVER &&
-                   IsKeyPressed(KEY_SPACE)) {
-            ResetGame();
-        }
-
         // UPDATE
-        if (game_state == PLAY) {
-            UpdateApple();
-            UpdateSnake();
-        }
-
+        UpdateGameState();
+        UpdateApple();
+        UpdateSnake();
         // DRAW
         BeginDrawing();
         DrawBackground();
         DrawApple();
         DrawSnake();
         DrawScore();
-        if (game_state == PAUSE || game_state == GAME_OVER) DrawState();
+        DrawState();
         EndDrawing();
     }
     CloseWindow();
