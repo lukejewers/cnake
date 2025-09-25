@@ -163,12 +163,12 @@ void DrawScore() {
 void DrawState() {
     if (game_state == PLAY) return;
     const char *game_state_text = (game_state == PAUSE) ? "PAUSE" : "GAME OVER";
-    int stateTextWidth = MeasureText(game_state_text, FONT_SIZE);
-    DrawText(game_state_text, (WIN_WIDTH/2) - (stateTextWidth/2), (WIN_HEIGHT/2) - (FONT_SIZE/2), FONT_SIZE, TEXT_COLOR);
+    int state_text_width = MeasureText(game_state_text, FONT_SIZE);
+    DrawText(game_state_text, (WIN_WIDTH/2) - (state_text_width/2), (WIN_HEIGHT/2) - (FONT_SIZE/2), FONT_SIZE, TEXT_COLOR);
 
     const char *game_replay_text = (game_state == PAUSE) ? "Press SPACE or ARROWS to play" : "Press SPACE to replay";
-    int replayTextWidth = MeasureText(game_replay_text, FONT_SIZE);
-    DrawText(game_replay_text, (WIN_WIDTH/2) - (replayTextWidth/2), (WIN_HEIGHT/2) + (FONT_SIZE/2) * 2, FONT_SIZE, TEXT_COLOR);
+    int replay_text_width = MeasureText(game_replay_text, FONT_SIZE);
+    DrawText(game_replay_text, (WIN_WIDTH/2) - (replay_text_width/2), (WIN_HEIGHT/2) + (FONT_SIZE/2) * 2, FONT_SIZE, TEXT_COLOR);
 }
 
 void ResetGame() {
